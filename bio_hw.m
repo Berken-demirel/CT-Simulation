@@ -4,7 +4,7 @@ clc
 close all
 %% Loading image
 addpath('C:\Users\berkenutku\Desktop\415_HW\P3_Sample Images');
-[file,~,path] = uiputfile('*.mat','Workspace File');
+[file,~,path] = uigetfile('*.mat','Workspace File');
 [~,name,~] = fileparts(file);
 data_struct = load(file);
 data = data_struct.(name);
