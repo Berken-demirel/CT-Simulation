@@ -1,4 +1,4 @@
-function my_simulate(currentAmplitude, currentDuration, flag, timeDelay)
+function [outputDuration,outputCurrent, outputMatrix, outputMatrix2] = my_simulate(currentAmplitude, currentDuration, flag, timeDelay,plot_value)
 
 % User inputs
 current_amplitude = str2double(currentAmplitude); % mA
@@ -77,58 +77,65 @@ n(i) = n(i-1) + durationStep*(alpha_n(i-1)*(1-n(i-1))- beta_n(i-1)*n(i-1));
 % ionic conductances
 GNA(i-1) = GNArest * m(i-1)^3*h(i-1);
 GK(i-1) = GKrest * n(i-1)^4;
+GL(i-1) = 0.3;
 % Currents
 current_K(i-1) = GK(i-1) * (-VK + Vmembrane(i-1));
 current_Na(i-1) = GNA(i-1) * (-VNA + Vmembrane(i-1));
-current_L(i-1) = GL * (-VL + Vmembrane(i-1));
+current_L(i-1) = GL(i-1) * (-VL + Vmembrane(i-1));
 
 Vmembrane(i) = Vmembrane(i-1) + durationStep * (current(i-1) - current_K(i-1) - current_Na(i-1) - current_L(i-1)) / Cm;
 current_C(i-1) = current(i-1) - current_K(i-1) - current_Na(i-1) - current_L(i-1);
 current_total(i-1) = current_K(i-1) + current_Na(i-1) + current_L(i-1) + current_C(i-1);
 end
 %% Plots
-figure,
-plot(duration,current)
-title('Applied input current')
-ylabel('\muA/cm^2')
-xlabel('Time (msec)')
+if plot_value == 1
+    figure,
+    plot(duration,current)
+    title('Applied input current')
+    ylabel('\muA/cm^2')
+    xlabel('Time (msec)')
 
-figure,
-plot(duration(1:end-1), current_total)
-title('The total membrane current')
-ylabel('\muA/cm^2')
-xlabel('Time (msec)')
+    figure,
+    plot(duration(1:end-1), current_total)
+    title('The total membrane current')
+    ylabel('\muA/cm^2')
+    xlabel('Time (msec)')
 
-figure,
-plot(duration(1:end-1),GNA)
-hold on
-plot(duration(1:end-1),GK)
-hold on 
-plot(duration(1:end-1),GL)
-title('Sodium, potassium, and leakage channel conductances')
-ylabel('mSm/cm^2')
-xlabel('Time (msec)')
-legend('Sodium','Potassium','Leakage')
+    figure,
+    plot(duration(1:end-1),GNA)
+    hold on
+    plot(duration(1:end-1),GK)
+    hold on 
+    plot(duration(1:end-1),GL)
+    title('Sodium, potassium, and leakage channel conductances')
+    ylabel('mSm/cm^2')
+    xlabel('Time (msec)')
+    legend('Sodium','Potassium','Leakage')
 
-figure,
-plot(duration,current_Na)
-hold on
-plot(duration,current_K)
-hold on 
-plot(duration,current_L)
-hold on
-plot(duration,current_C)
-title('Sodium, potassium,leakage and capacitive currents')
-xlabel('Time (msec)')
-ylabel('\muA/cm^2')
-legend('Sodium','Potassium','Leakage','Capacitive')
+    figure,
+    plot(duration,current_Na)
+    hold on
+    plot(duration,current_K)
+    hold on 
+    plot(duration,current_L)
+    hold on
+    plot(duration,current_C)
+    title('Sodium, potassium,leakage and capacitive currents')
+    xlabel('Time (msec)')
+    ylabel('\muA/cm^2')
+    legend('Sodium','Potassium','Leakage','Capacitive')
 
-figure,
-plot(duration, Vmembrane)
-xlabel('Time (msec)')
-ylabel('mV')
-title('Membrane Voltage')
-
+    figure,
+    plot(duration, Vmembrane)
+    xlabel('Time (msec)')
+    ylabel('mV')
+    title('Membrane Voltage')
+else
+    outputDuration = duration;
+    outputCurrent = current;
+    outputMatrix = [current_total; GNA; GK; GL];
+    outputMatrix2 = [current_Na; current_K; current_L; current_C; Vmembrane];
+end
 % alpha and beta functions for the gating variables 
 
 function aM = alphaM(V,Vrest)

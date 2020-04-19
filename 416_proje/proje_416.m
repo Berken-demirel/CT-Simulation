@@ -80,10 +80,11 @@ n(i) = n(i-1) + durationStep*(alpha_n(i-1)*(1-n(i-1))- beta_n(i-1)*n(i-1));
 % ionic conductances
 GNA(i-1) = GNArest * m(i-1)^3*h(i-1);
 GK(i-1) = GKrest * n(i-1)^4;
+GL(i-1) = 0.3;
 % Currents
 current_K(i-1) = GK(i-1) * (-VK + Vmembrane(i-1));
 current_Na(i-1) = GNA(i-1) * (-VNA + Vmembrane(i-1));
-current_L(i-1) = GL * (-VL + Vmembrane(i-1));
+current_L(i-1) = GL(i-1) * (-VL + Vmembrane(i-1));
 
 Vmembrane(i) = Vmembrane(i-1) + durationStep * (current(i-1) - current_K(i-1) - current_Na(i-1) - current_L(i-1)) / Cm;
 current_C(i-1) = current(i-1) - current_K(i-1) - current_Na(i-1) - current_L(i-1);
