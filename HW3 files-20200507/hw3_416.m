@@ -48,18 +48,20 @@ title('Plot of Lead1 for the specified interval')
 T = 1/fs;
 fft_signal = T * 0.25 * abs(fftshift(fft(data2_lead1)));
 frequency_axis = linspace(-fs/2,fs/2,length(fft_signal));
+figure,
 plot(frequency_axis,fft_signal)
 title('The CTFT of the overall signal')
 xlabel('The frequency in Hertz')
 ylabel('Magnitude')
 
 %% Q3)
-L = 5;
+L = 2;
 h_n = 1/L * ones(1,L);
 filtered_signal = conv(h_n,data2_lead1);
 filtered_signal = filtered_signal(:,1+L/2:end-L/2+1);
 
 baseline = data2_lead1 - filtered_signal;
+fft_signal = T * 0.25 * abs(fftshift(fft(filtered_signal)));
 
 figure,
 plot(data2_lead1(1,interval_begin:interval_end))
@@ -69,6 +71,13 @@ hold on
 plot(baseline(:,interval_begin:interval_end))
 legend('Raw data','Filtered data','Baseline')
 title('Filtered signal')
+
+figure,
+plot(frequency_axis,fft_signal)
+title('The CTFT of the baseline-corrected signal')
+xlabel('The frequency in Hertz')
+ylabel('Magnitude')
+
 %% Q4)
 wo = 50/(fs/2);  
 bw = wo/5;
@@ -78,7 +87,7 @@ filtered_signal = filter(b,a,filtered_signal);
 
 figure,
 plot(filtered_signal(:,interval_begin:interval_end))
-title('Filtered signal (Elimination of Powerline')
+title('Filtered signal (Elimination of Powerline)')
 
 T = 1/fs;
 fft_signal = T * 0.25 * abs(fftshift(fft(filtered_signal)));
